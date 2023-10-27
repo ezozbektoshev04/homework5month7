@@ -1,204 +1,237 @@
-// import React from 'react'
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
+
+type Product = {
+  id: string;
+  image: string;
+  name: string;
+  category: string;
+  weight: string;
+  price: string;
+};
 
 const Catalog = () => {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const limit: number = 8;
+  const numberOfPages: number = Math.ceil(allProducts.length / limit);
+  // console.log(numberOfPages);
+
+  const arrBtns: number[] = [];
+
+  const [page, setPage] = useState(1);
+  for (let i: number = 1; i <= numberOfPages; i++) {
+    arrBtns.push(i);
+    // console.log(arrBtns);
+  }
+
+  const fetchData = async () => {
+    try {
+      const res = await axios.get("http://localhost:3000/products");
+      setAllProducts(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const fetchPaginatedData = async (page: number) => {
+    try {
+      const res = await axios.get(
+        `http://localhost:3000/products?_page=${page}&_limit=${limit}`
+      );
+      setProducts(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    fetchPaginatedData(page);
+  }, [page]);
+
+  const navigate = useNavigate();
+  const [input, setInput] = useState("");
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInput(e.target.value.toLowerCase());
+  };
+  // console.log(input);
+  const filteredData = products.filter((el) => {
+    if (input === "") {
+      return el;
+    } else {
+      return el.name.toLocaleLowerCase().includes(input);
+    }
+  });
+  const [show, setShow] = useState(false);
+  const handleShow = () => {
+    setShow(!show);
+  };
+
   return (
     <div className=" mt-20  ">
       <section className=" bg-bgHeader">
         <div className="container mx-auto">
           <div className="flex justify-between pt-12 pb-14 gap-3">
             <p className="text-4xl font-medium">Каталог</p>
-            <button
-              className=" rounded-sm px-6 py-3 text-textColor font-medium"
-              style={{ border: "1px solid #B3BAC1" }}
+            <input
+              type="text"
+              className="form-control w-25 h-50"
+              placeholder="Search..."
+              id="search"
+              name="search"
+              onChange={handleChange}
+            />
+            <div
+              onClick={handleShow}
+              className={show === false ? "block" : "hidden"}
             >
-              Фильтр
-            </button>
-          </div>
-          <div className="flex justify-between mb-7 gap-y-7 gap-x-3">
-            <div className="relative">
-              <img src="/image33.png" alt="" />
-              <div className=" absolute bottom-5 left-5 right-5 flex justify-between">
-                <div>
-                  <p className=" font-medium text-textColor pb-1">High</p>
-                  <p className="font-medium text-textColor2 text-xs">
-                    крем для лица
-                  </p>
-                </div>
-                <div>
-                  <p className=" font-medium text-textColor pb-1">990 P</p>
-                  <p className="font-medium text-textColor2 text-xs">50ml</p>
-                </div>
-              </div>
+              <button
+                className="filter-tog rounded-sm px-6 py-2 text-textColor font-medium"
+                style={{ border: "1px solid #B3BAC1" }}
+              >
+                Фильтр
+              </button>
             </div>
-            <div className="relative">
-              <img src="/image34.png" alt="" />
-              <div className=" absolute bottom-5 left-5 right-5 flex justify-between">
-                <div>
-                  <p className=" font-medium text-textColor pb-1">High</p>
-                  <p className="font-medium text-textColor2 text-xs">
-                    крем для лица
-                  </p>
-                </div>
-                <div>
-                  <p className=" font-medium text-textColor pb-1">990 P</p>
-                  <p className="font-medium text-textColor2 text-xs">50ml</p>
-                </div>
-              </div>
-            </div>
-            <div className="relative">
-              <img src="/image35.png" alt="" />
-              <div className=" absolute bottom-5 left-5 right-5 flex justify-between">
-                <div>
-                  <p className=" font-medium text-textColor pb-1">High</p>
-                  <p className="font-medium text-textColor2 text-xs">
-                    крем для лица
-                  </p>
-                </div>
-                <div>
-                  <p className=" font-medium text-textColor pb-1">990 P</p>
-                  <p className="font-medium text-textColor2 text-xs">50ml</p>
-                </div>
-              </div>
-            </div>
-            <div className="relative">
-              <img src="/image24.png" alt="" />
-              <div className=" absolute bottom-5 left-5 right-5 flex justify-between">
-                <div>
-                  <p className=" font-medium text-textColor pb-1">High</p>
-                  <p className="font-medium text-textColor2 text-xs">
-                    крем для лица
-                  </p>
-                </div>
-                <div>
-                  <p className=" font-medium text-textColor pb-1">990 P</p>
-                  <p className="font-medium text-textColor2 text-xs">50ml</p>
-                </div>
-              </div>
+            <div
+              onClick={handleShow}
+              className={show === true ? "block cursor-pointer" : "hidden"}
+            >
+              <img src="/image38.svg" alt="" />
             </div>
           </div>
-          <div className="flex justify-between mb-7 gap-y-7 gap-x-3">
-            <div className="relative">
-              <img src="/image25.png" alt="" />
-              <div className=" absolute bottom-5 left-5 right-5 flex justify-between">
-                <div>
-                  <p className=" font-medium text-textColor pb-1">High</p>
-                  <p className="font-medium text-textColor2 text-xs">
-                    крем для лица
-                  </p>
-                </div>
-                <div>
-                  <p className=" font-medium text-textColor pb-1">990 P</p>
-                  <p className="font-medium text-textColor2 text-xs">50ml</p>
-                </div>
+          <div
+            // onClick={handleShow}
+            className={
+              show === true ? "block bg-bgHeader py-7 px-10 mb-4" : "hidden"
+            }
+            style={{
+              background: "#F8F8F6",
+              boxShadow: "0px 4px 30px 0px rgba(214, 214, 214, 0.19)",
+            }}
+          >
+            <div className="flex pb-3 justify-around gap-24">
+              <div className="form-check">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  value=""
+                  id="flexCheckDefault"
+                />
+                <label className="form-check-label" htmlFor="flexCheckDefault">
+                  крем для лица
+                </label>
+              </div>
+              <div className="form-check">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  value=""
+                  id="flexCheckDefault"
+                />
+                <label className="form-check-label" htmlFor="flexCheckDefault">
+                  минеральная пудра
+                </label>
               </div>
             </div>
-            <div className="relative">
-              <img src="/image26.png" alt="" />
-              <div className=" absolute bottom-5 left-5 right-5 flex justify-between">
-                <div>
-                  <p className=" font-medium text-textColor pb-1">High</p>
-                  <p className="font-medium text-textColor2 text-xs">
-                    крем для лица
-                  </p>
-                </div>
-                <div>
-                  <p className=" font-medium text-textColor pb-1">990 P</p>
-                  <p className="font-medium text-textColor2 text-xs">50ml</p>
-                </div>
+            <div className="flex pb-3 justify-around gap-24">
+              <div className="form-check">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  value=""
+                  id="flexCheckDefault"
+                />
+                <label className="form-check-label" htmlFor="flexCheckDefault">
+                  масло для тела
+                </label>
+              </div>
+              <div className="form-check">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  value="бомбочка для ванны"
+                  id="flexCheckDefault"
+                />
+                <label className="form-check-label" htmlFor="flexCheckDefault">
+                  бомбочка для ванны
+                </label>
               </div>
             </div>
-            <div className="relative">
-              <img src="/image27.png" alt="" />
-              <div className=" absolute bottom-5 left-5 right-5 flex justify-between">
-                <div>
-                  <p className=" font-medium text-textColor pb-1">High</p>
-                  <p className="font-medium text-textColor2 text-xs">
-                    крем для лица
-                  </p>
-                </div>
-                <div>
-                  <p className=" font-medium text-textColor pb-1">990 P</p>
-                  <p className="font-medium text-textColor2 text-xs">50ml</p>
-                </div>
+            <div className="flex pb-3 justify-around gap-24">
+              <div className="form-check">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  value=""
+                  id="flexCheckDefault"
+                />
+                <label className="form-check-label" htmlFor="flexCheckDefault">
+                  маска для лица
+                </label>
               </div>
-            </div>
-            <div className="relative">
-              <img src="/image28.png" alt="" />
-              <div className=" absolute bottom-5 left-5 right-5 flex justify-between">
-                <div>
-                  <p className=" font-medium text-textColor pb-1">High</p>
-                  <p className="font-medium text-textColor2 text-xs">
-                    крем для лица
-                  </p>
-                </div>
-                <div>
-                  <p className=" font-medium text-textColor pb-1">990 P</p>
-                  <p className="font-medium text-textColor2 text-xs">50ml</p>
-                </div>
+              <div className="form-check">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  value=""
+                  id="flexCheckDefault"
+                />
+                <label className="form-check-label" htmlFor="flexCheckDefault">
+                  мыло ручной работы
+                </label>
               </div>
             </div>
           </div>
-          <div className="flex justify-between pb-7 gap-y-7 gap-x-3">
-            <div className="relative">
-              <img src="/image29.png" alt="" />
-              <div className=" absolute bottom-5 left-5 right-5 flex justify-between">
-                <div>
-                  <p className=" font-medium text-textColor pb-1">High</p>
-                  <p className="font-medium text-textColor2 text-xs">
-                    крем для лица
-                  </p>
-                </div>
-                <div>
-                  <p className=" font-medium text-textColor pb-1">990 P</p>
-                  <p className="font-medium text-textColor2 text-xs">50ml</p>
-                </div>
-              </div>
-            </div>
-            <div className="relative">
-              <img src="/image30.png" alt="" />
-              <div className=" absolute bottom-5 left-5 right-5 flex justify-between">
-                <div>
-                  <p className=" font-medium text-textColor pb-1">High</p>
-                  <p className="font-medium text-textColor2 text-xs">
-                    крем для лица
-                  </p>
-                </div>
-                <div>
-                  <p className=" font-medium text-textColor pb-1">990 P</p>
-                  <p className="font-medium text-textColor2 text-xs">50ml</p>
-                </div>
-              </div>
-            </div>
-            <div className="relative">
-              <img src="/image31.png" alt="" />
-              <div className=" absolute bottom-5 left-5 right-5 flex justify-between">
-                <div>
-                  <p className=" font-medium text-textColor pb-1">High</p>
-                  <p className="font-medium text-textColor2 text-xs">
-                    крем для лица
-                  </p>
-                </div>
-                <div>
-                  <p className=" font-medium text-textColor pb-1">990 P</p>
-                  <p className="font-medium text-textColor2 text-xs">50ml</p>
-                </div>
-              </div>
-            </div>
-            <div className="relative">
-              <img src="/image32.png" alt="" />
-              <div className=" absolute bottom-5 left-5 right-5 flex justify-between">
-                <div>
-                  <p className=" font-medium text-textColor pb-1">High</p>
-                  <p className="font-medium text-textColor2 text-xs">
-                    крем для лица
-                  </p>
-                </div>
-                <div>
-                  <p className=" font-medium text-textColor pb-1">990 P</p>
-                  <p className="font-medium text-textColor2 text-xs">50ml</p>
-                </div>
-              </div>
-            </div>
+          <div className="flex justify-between pb-7 gap-y-7 gap-x-3 flex-wrap">
+            {products.length > 0
+              ? filteredData.map((el) => {
+                  return (
+                    <div
+                      key={el.id}
+                      className="relative cursor-pointer"
+                      onClick={() => navigate(`/details/${el.id}`)}
+                    >
+                      <img src={el.image} alt="" />
+                      <div className=" absolute bottom-5 left-5 right-5 flex justify-between">
+                        <div>
+                          <p className=" font-medium text-textColor pb-1">
+                            {el.name}
+                          </p>
+                          <p className="font-medium text-textColor2 text-xs">
+                            {el.category}
+                          </p>
+                        </div>
+                        <div>
+                          <p className=" font-medium text-textColor pb-1">
+                            {el.price} P
+                          </p>
+                          <p className="font-medium text-textColor2 text-xs">
+                            {el.weight}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
+              : null}
+          </div>
+          <div className="page-btns flex gap-3 pt-3 justify-center">
+            {arrBtns.length > 0
+              ? arrBtns.map((item) => (
+                  <button
+                    className=" px-3 py-2 rounded hover:bg-orange-400  bg-orange-300 "
+                    key={item}
+                    onClick={() => setPage(item)}
+                  >
+                    {item}
+                  </button>
+                ))
+              : null}
           </div>
         </div>
       </section>
@@ -207,67 +240,34 @@ const Catalog = () => {
           <p className="text-center text-3xl text-textColor font-medium pb-14">
             Вы недавно смотрели
           </p>
-          <div className="flex justify-between pb-7 gap-y-7 gap-x-3">
-            <div className="relative">
-              <img src="/image29.png" alt="" />
-              <div className=" absolute bottom-5 left-5 right-5 flex justify-between">
-                <div>
-                  <p className=" font-medium text-textColor pb-1">High</p>
-                  <p className="font-medium text-textColor2 text-xs">
-                    крем для лица
-                  </p>
-                </div>
-                <div>
-                  <p className=" font-medium text-textColor pb-1">990 P</p>
-                  <p className="font-medium text-textColor2 text-xs">50ml</p>
-                </div>
-              </div>
-            </div>
-            <div className="relative">
-              <img src="/image30.png" alt="" />
-              <div className=" absolute bottom-5 left-5 right-5 flex justify-between">
-                <div>
-                  <p className=" font-medium text-textColor pb-1">High</p>
-                  <p className="font-medium text-textColor2 text-xs">
-                    крем для лица
-                  </p>
-                </div>
-                <div>
-                  <p className=" font-medium text-textColor pb-1">990 P</p>
-                  <p className="font-medium text-textColor2 text-xs">50ml</p>
-                </div>
-              </div>
-            </div>
-            <div className="relative">
-              <img src="/image31.png" alt="" />
-              <div className=" absolute bottom-5 left-5 right-5 flex justify-between">
-                <div>
-                  <p className=" font-medium text-textColor pb-1">High</p>
-                  <p className="font-medium text-textColor2 text-xs">
-                    крем для лица
-                  </p>
-                </div>
-                <div>
-                  <p className=" font-medium text-textColor pb-1">990 P</p>
-                  <p className="font-medium text-textColor2 text-xs">50ml</p>
-                </div>
-              </div>
-            </div>
-            <div className="relative">
-              <img src="/image32.png" alt="" />
-              <div className=" absolute bottom-5 left-5 right-5 flex justify-between">
-                <div>
-                  <p className=" font-medium text-textColor pb-1">High</p>
-                  <p className="font-medium text-textColor2 text-xs">
-                    крем для лица
-                  </p>
-                </div>
-                <div>
-                  <p className=" font-medium text-textColor pb-1">990 P</p>
-                  <p className="font-medium text-textColor2 text-xs">50ml</p>
-                </div>
-              </div>
-            </div>
+          <div className="flex justify-between pb-7 gap-y-7 flex-wrap gap-x-3">
+            {products.length > 0
+              ? products.slice(4, 8).map((el) => {
+                  return (
+                    <div key={el.id} className="relative">
+                      <img src={el.image} alt="" />
+                      <div className=" absolute bottom-5 left-5 right-5 flex justify-between">
+                        <div>
+                          <p className=" font-medium text-textColor pb-1">
+                            {el.name}
+                          </p>
+                          <p className="font-medium text-textColor2 text-xs">
+                            {el.category}
+                          </p>
+                        </div>
+                        <div>
+                          <p className=" font-medium text-textColor pb-1">
+                            {el.price} P
+                          </p>
+                          <p className="font-medium text-textColor2 text-xs">
+                            {el.weight}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
+              : null}
           </div>
         </div>
       </section>

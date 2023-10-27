@@ -6,7 +6,9 @@ const Header = () => {
     <header className=" bg-bgHeader shadow-orange-200 fixed top-0 left-0 right-0 z-50">
       <nav className="container mx-auto px-4 py-8 flex  justify-between ">
         <div className="logo">
-          <img src="/image1.svg" alt="" />
+          <NavLink to="/">
+            <img src="/image1.svg" alt="" />
+          </NavLink>
         </div>
         <div className="flex gap-x-9">
           <NavLink to="/catalog">Каталог</NavLink>
