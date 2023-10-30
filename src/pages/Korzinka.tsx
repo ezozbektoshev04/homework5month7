@@ -14,6 +14,8 @@ type Product = {
 const Korzinka = () => {
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   let param = useParams();
+  const [korProducts, setKorProducts] = useState<Product[]>([]);
+  // let [counter, setCounter] = useState<number>(1);
   const fetchData = async () => {
     try {
       const res = await axios.get(`http://localhost:3000/products/${param.id}`);
@@ -27,6 +29,21 @@ const Korzinka = () => {
     fetchData();
   }, []);
   // console.log(allProducts);
+
+  const dataSave = (el: Product) => {
+    setKorProducts([el]);
+  };
+  useEffect(() => {
+    localStorage.setItem("korProducts", JSON.stringify(korProducts));
+  }, [korProducts]);
+
+  useEffect(() => {
+    const data = localStorage.getItem("korProducts");
+    if (data) {
+      const aa = JSON.parse(data);
+      setAllProducts(...[aa]);
+    }
+  }, []);
 
   return (
     <div className=" mt-20  ">
@@ -105,6 +122,7 @@ const Korzinka = () => {
                   <button
                     className=" rounded-sm px-6 py-3 text-textColor font-medium"
                     style={{ border: "1px solid #B3BAC1" }}
+                    onClick={() => dataSave(el)}
                   >
                     Добавить в корзину
                   </button>

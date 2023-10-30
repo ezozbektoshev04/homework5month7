@@ -18,7 +18,7 @@ const Header = () => {
             <NavLink to="/">
               <img src="/image4.svg" alt="" />
             </NavLink>
-            <NavLink to="/details">
+            <NavLink to="/korzinka">
               <img src="/image5.svg" alt="" />
             </NavLink>
           </div>

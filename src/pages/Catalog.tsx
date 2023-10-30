@@ -15,31 +15,46 @@ type Product = {
 const Catalog = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [input, setInput] = useState("");
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInput(e.target.value.toLowerCase());
+  };
+  const [category, setCategory] = useState<string[]>([]);
+
+  const [show, setShow] = useState(false);
+  const handleShow = () => {
+    setShow(!show);
+  };
   const limit: number = 8;
   const numberOfPages: number = Math.ceil(allProducts.length / limit);
-  // console.log(numberOfPages);
-
   const arrBtns: number[] = [];
-
   const [page, setPage] = useState(1);
   for (let i: number = 1; i <= numberOfPages; i++) {
     arrBtns.push(i);
-    // console.log(arrBtns);
   }
-
-  const fetchData = async () => {
+  const fetchData = async (input: string, category: string[]) => {
+    let url = `http://localhost:3000/products?q=${input}`;
+    category.map((el) => {
+      url += `&category=${el}`;
+    });
     try {
-      const res = await axios.get("http://localhost:3000/products");
+      const res = await axios.get(url);
       setAllProducts(res.data);
     } catch (error) {
       console.log(error);
     }
   };
-  const fetchPaginatedData = async (page: number) => {
+  const fetchPaginatedData = async (
+    page: number,
+    input: string,
+    category: string[]
+  ) => {
+    let url = `http://localhost:3000/products?_page=${page}&_limit=${limit}&q=${input}`;
+    category.map((el) => {
+      url += `&category=${el}`;
+    });
     try {
-      const res = await axios.get(
-        `http://localhost:3000/products?_page=${page}&_limit=${limit}`
-      );
+      const res = await axios.get(url);
       setProducts(res.data);
     } catch (error) {
       console.log(error);
@@ -47,29 +62,31 @@ const Catalog = () => {
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    fetchData(input, category);
+  }, [input, category]);
 
   useEffect(() => {
-    fetchPaginatedData(page);
-  }, [page]);
+    fetchPaginatedData(page, input, category);
+  }, [page, input, category]);
 
   const navigate = useNavigate();
-  const [input, setInput] = useState("");
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInput(e.target.value.toLowerCase());
-  };
-  // console.log(input);
-  const filteredData = products.filter((el) => {
-    if (input === "") {
-      return el;
+
+  const handleFilterChnage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // console.log(e.target.value);
+    if (!category.includes(e.target.value)) {
+      if (e.target.checked) {
+        setCategory([...category, e.target.value]);
+      }
     } else {
-      return el.name.toLocaleLowerCase().includes(input);
+      if (!e.target.checked) {
+        setCategory(category.filter((el) => el !== e.target.value));
+      }
     }
-  });
-  const [show, setShow] = useState(false);
-  const handleShow = () => {
-    setShow(!show);
+  };
+  // console.log(category);
+  const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    setShow(false);
   };
 
   return (
@@ -105,7 +122,6 @@ const Catalog = () => {
             </div>
           </div>
           <div
-            // onClick={handleShow}
             className={
               show === true ? "block bg-bgHeader py-7 px-10 mb-4" : "hidden"
             }
@@ -114,82 +130,100 @@ const Catalog = () => {
               boxShadow: "0px 4px 30px 0px rgba(214, 214, 214, 0.19)",
             }}
           >
-            <div className="flex pb-3 justify-around gap-24">
-              <div className="form-check">
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  value=""
-                  id="flexCheckDefault"
-                />
-                <label className="form-check-label" htmlFor="flexCheckDefault">
-                  крем для лица
-                </label>
+            <form>
+              <div className="flex pb-3 justify-around gap-24">
+                <div className="form-check">
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    value="крем для лица"
+                    id="cat1"
+                    onChange={handleFilterChnage}
+                  />
+                  <label className="form-check-label" htmlFor="cat1">
+                    крем для лица
+                  </label>
+                </div>
+                <div className="form-check">
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    value="минеральная пудра"
+                    id="cat2"
+                    onChange={handleFilterChnage}
+                  />
+                  <label className="form-check-label" htmlFor="cat2">
+                    минеральная пудра
+                  </label>
+                </div>
               </div>
-              <div className="form-check">
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  value=""
-                  id="flexCheckDefault"
-                />
-                <label className="form-check-label" htmlFor="flexCheckDefault">
-                  минеральная пудра
-                </label>
+              <div className="flex pb-3 justify-around gap-24">
+                <div className="form-check">
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    value="масло для тела"
+                    id="cat3"
+                    onChange={handleFilterChnage}
+                  />
+                  <label className="form-check-label" htmlFor="cat3">
+                    масло для тела
+                  </label>
+                </div>
+                <div className="form-check">
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    value="бомбочка для ванны"
+                    id="cat4"
+                    onChange={handleFilterChnage}
+                  />
+                  <label className="form-check-label" htmlFor="cat4">
+                    бомбочка для ванны
+                  </label>
+                </div>
               </div>
-            </div>
-            <div className="flex pb-3 justify-around gap-24">
-              <div className="form-check">
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  value=""
-                  id="flexCheckDefault"
-                />
-                <label className="form-check-label" htmlFor="flexCheckDefault">
-                  масло для тела
-                </label>
+              <div className="flex pb-3 justify-around gap-24">
+                <div className="form-check">
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    value="маска для лица"
+                    id="cat5"
+                    onChange={handleFilterChnage}
+                  />
+                  <label className="form-check-label" htmlFor="cat5">
+                    маска для лица
+                  </label>
+                </div>
+                <div className="form-check">
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    value="мыло ручной работы"
+                    id="cat6"
+                    onChange={handleFilterChnage}
+                  />
+                  <label className="form-check-label" htmlFor="cat6">
+                    мыло ручной работы
+                  </label>
+                </div>
               </div>
-              <div className="form-check">
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  value="бомбочка для ванны"
-                  id="flexCheckDefault"
-                />
-                <label className="form-check-label" htmlFor="flexCheckDefault">
-                  бомбочка для ванны
-                </label>
+              <div className="flex pb-3 justify-around gap-24">
+                <button
+                  className=" rounded-sm px-6 py-3 text-textColor font-medium"
+                  style={{ border: "1px solid #B3BAC1" }}
+                  type="submit"
+                  onClick={handleSubmit}
+                >
+                  Submit
+                </button>
               </div>
-            </div>
-            <div className="flex pb-3 justify-around gap-24">
-              <div className="form-check">
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  value=""
-                  id="flexCheckDefault"
-                />
-                <label className="form-check-label" htmlFor="flexCheckDefault">
-                  маска для лица
-                </label>
-              </div>
-              <div className="form-check">
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  value=""
-                  id="flexCheckDefault"
-                />
-                <label className="form-check-label" htmlFor="flexCheckDefault">
-                  мыло ручной работы
-                </label>
-              </div>
-            </div>
+            </form>
           </div>
           <div className="flex justify-between pb-7 gap-y-7 gap-x-3 flex-wrap">
             {products.length > 0
-              ? filteredData.map((el) => {
+              ? products.map((el) => {
                   return (
                     <div
                       key={el.id}
@@ -347,6 +381,7 @@ const Catalog = () => {
           </div>
         </div>
       </section>
+      {}
     </div>
   );
 };

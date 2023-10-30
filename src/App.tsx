@@ -5,6 +5,7 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Catalog from "./pages/Catalog";
 import Korzinka from "./pages/Korzinka";
+import Shopping from "./pages/Shopping";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/catalog" element={<Catalog />} />
         <Route path="/details/:id" element={<Korzinka />} />
+        <Route path="/korzinka" element={<Shopping />} />
       </Routes>
       <Footer />
     </BrowserRouter>
